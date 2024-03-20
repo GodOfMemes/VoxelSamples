@@ -37,12 +37,23 @@ public:
 	//~ Begin FVoxelGeneratorInstance Interface
 	virtual void Init(const FVoxelGeneratorInit& InitStruct) override
 	{
+		/*
+		 *	The "MakeSeed" Node takes the Input Seed and hashes the value
+		 *	The Next Output hashes the previous one
+		 */
+		
 		auto seed = FVoxelUtilities::MurmurHash32(1337);
 		Noise.SetSeed(seed);
 		Noise.SetInterpolation(EVoxelNoiseInterpolation::Quintic);
 		Noise.SetFractalOctavesAndGain(7, 0.5);
 		Noise.SetFractalLacunarity(2.0);
 		Noise.SetFractalType(EVoxelNoiseFractalType::FBM);
+		
+		MaterialNoise.SetSeed(FVoxelUtilities::MurmurHash32(seed));
+		MaterialNoise.SetInterpolation(EVoxelNoiseInterpolation::Quintic);
+		MaterialNoise.SetFractalOctavesAndGain(7, 0.5);
+		MaterialNoise.SetFractalLacunarity(2.0);
+		MaterialNoise.SetFractalType(EVoxelNoiseFractalType::FBM);
 		
 		if(IsValid(InitStruct.MaterialCollection) && InitStruct.MaterialConfig == EVoxelMaterialConfig::MultiIndex)
 		{
@@ -65,7 +76,7 @@ public:
 		FVoxelMaterialBuilder Builder;
 		Builder.SetMaterialConfig(EVoxelMaterialConfig::MultiIndex);
 
-		auto Height = Z + (Noise.GetPerlinFractal_2D(X,Y,0.02,7) * 25);
+		auto Height = Z + (MaterialNoise.GetPerlinFractal_2D(X,Y,0.02,7) * 25);
 		
 		TArray<v_flt> InputsArray =
 		{
@@ -107,6 +118,7 @@ public:
 
 private:
 	FVoxelFastNoise Noise;
+	FVoxelFastNoise MaterialNoise;
 	FName Layer0Name;
 	FName Layer1Name;
 	FName Layer2Name;

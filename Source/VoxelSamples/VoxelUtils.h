@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "VoxelMacros.h"
 
-// Copy from VoxelGraph Module
+// Copied from VoxelGraph Module
 
 template<typename TInArray, typename TOutArray>
 void HeightSplit(v_flt Height, const TInArray& Inputs, TOutArray& Outputs)
